@@ -1,8 +1,5 @@
 # Amazon-Web-Scraping-Project
 
-Below is **clean, structured project documentation** you can directly submit, upload to GitHub, or include in a resume/project report.
-No italics used.
-
 ---
 
 ## 1. Project Overview
