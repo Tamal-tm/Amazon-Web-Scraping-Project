@@ -1,0 +1,207 @@
+# Amazon-Web-Scraping-Project
+
+---
+
+
+## 1. Project Overview
+
+This project is a Python-based web scraping application that extracts laptop product data from Amazon India. The scraper collects structured information such as product title, price, rating, number of reviews, and availability status, cleans the data, and exports it into a CSV file for further analysis or visualization.
+
+The project demonstrates real-world data extraction, cleaning, and storage practices while handling common challenges like dynamic HTML structures, encoding issues, and request blocking.
+
+---
+
+## 2. Objectives
+
+* Scrape laptop product listings from Amazon India
+* Extract key product attributes:
+
+  * Product Title
+  * Price
+  * Rating
+  * Number of Reviews
+  * Availability
+* Clean and normalize the scraped data
+* Export the processed data into a CSV file
+* Make the dataset compatible with Excel and Power BI
+
+---
+
+## 3. Technologies Used
+
+* Programming Language: Python
+* Libraries:
+
+  * requests – for HTTP requests
+  * BeautifulSoup (bs4) – for HTML parsing
+  * pandas – for data manipulation and storage
+  * numpy – for handling missing values
+  * urllib.parse – for safe URL handling
+  * time – for request throttling
+* Data Output Format: CSV
+* Target Website: Amazon India (amazon.in)
+
+---
+
+## 4. Project Workflow
+
+1. Send an HTTP request to the Amazon search results page
+2. Parse the HTML content using BeautifulSoup
+3. Extract product page links
+4. Visit each product page individually
+5. Scrape required product details
+6. Clean and format the extracted data
+7. Store the final dataset in a CSV file
+
+---
+
+## 5. Code Structure Explanation
+
+### 5.1 HTTP Request Configuration
+
+A custom User-Agent and Accept-Language header is used to simulate a real browser request and avoid request rejection.
+
+
+---
+
+### 5.2 Product Link Extraction
+
+The scraper identifies all product links from the search results page using class selectors and stores them in a list.
+
+```python
+links = soup.find_all("a", class_="a-link-normal s-no-outline")
+```
+
+Relative and absolute URLs are handled safely using `urljoin`.
+
+---
+
+### 5.3 Product Detail Extraction Functions
+
+Separate reusable functions are defined for each data point:
+
+* get_title(soup)
+* get_price(soup)
+* get_rating(soup)
+* get_review_count(soup)
+* get_availability(soup)
+
+This modular design improves readability and maintainability.
+
+---
+
+### 5.4 Price Extraction Logic
+
+Amazon uses dynamic HTML structures. The scraper extracts prices from accessibility-friendly elements:
+
+```python
+span.a-price > span.a-offscreen
+```
+
+This ensures compatibility across regular and discounted products.
+
+---
+
+### 5.5 Data Cleaning and Normalization
+
+Key cleaning steps include:
+
+* Replacing broken currency encoding (`â‚¹` → `₹`)
+* Removing negative signs from review counts
+* Formatting prices as currency with commas and two decimals
+* Removing unwanted text from ratings
+* Dropping rows with missing titles
+
+Example:
+
+```python
+amazon_df['price'] = amazon_df['price'].apply(
+    lambda x: f"₹{float(x.replace('₹','')):,.2f}" if x else x
+)
+```
+
+---
+
+### 5.6 Rate Limiting
+
+A delay is added between requests to reduce the risk of IP blocking:
+
+```python
+time.sleep(2)
+```
+
+---
+
+## 6. Output Description
+
+The final output is a CSV file named:
+
+```
+amazon_data.csv
+```
+
+### Columns:
+
+* title
+* price
+* rating
+* reviews
+* availability
+
+### Encoding:
+
+* utf-8-sig (ensures proper display of ₹ symbol in Excel)
+
+---
+
+## 7. Sample Output
+
+```
+Lenovo V14 Laptop | ₹35,990.00 | 4.5 | 56 | In stock
+Lenovo V15 Laptop | ₹38,999.00 | 4.3 | 313 | In stock
+Acer Aspire Lite | ₹30,990.00 | 3.9 | 2070 | In stock
+```
+
+---
+
+## 8. Challenges Faced & Solutions
+
+| Challenge               | Solution                                   |
+| ----------------------- | ------------------------------------------ |
+| Dynamic HTML structure  | Used CSS selectors instead of fixed IDs    |
+| Blocked requests        | Added headers and time delay               |
+| Broken currency symbols | Used UTF-8 encoding and string replacement |
+| Malformed URLs          | Used urljoin for safe URL handling         |
+| Future pandas warnings  | Avoided inplace chained assignments        |
+
+---
+
+## 9. Limitations
+
+* Amazon may block requests if scraping frequency is increased
+* Some prices may not appear due to location or login restrictions
+* Data accuracy depends on page availability at scrape time
+
+---
+
+## 10. Future Enhancements
+
+* Add proxy rotation
+* Implement retry logic with exponential backoff
+* Store historical price data
+* Integrate Power BI dashboard
+* Schedule automated scraping using cron or Task Scheduler
+
+---
+
+## 11. Ethical Considerations
+
+* Scraping is performed at a controlled rate
+* No personal or sensitive user data is collected
+* Data is used strictly for educational and analytical purposes
+
+---
+
+## 12. Conclusion
+
+This project demonstrates a complete real-world data scraping pipeline — from extraction to cleaning and storage. It reflects practical skills in Python, data handling, debugging, and ethical scraping.
